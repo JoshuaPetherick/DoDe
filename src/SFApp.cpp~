@@ -1,0 +1,268 @@
+#include "SFApp.h"
+#include <ctime>
+
+ bool t = true;
+ bool f = false;
+
+SFApp::SFApp() : fire(0), is_running(true) {
+
+  surface = SDL_GetVideoSurface();
+  app_box = make_shared<SFBoundingBox>(Vector2(surface->w/2, surface->h/2), surface->w/2, surface->h/2);
+  player  = make_shared<SFAsset>(SFASSET_PLAYER);
+  auto player_pos = Point2(surface->w/2, (surface->h/2));
+  player->SetPosition(player_pos);
+
+  const int number_of_aliens = 40;
+  for(int i=1; i<number_of_aliens; i++) {
+    // place an alien at width/number_of_aliens * i
+    auto alien = make_shared<SFAsset>(SFASSET_ALIEN);
+    int x = rand() % 101+4; //http://www.cplusplus.com/forum/beginner/98214/
+    auto pos   = Point2(((surface->w/100)*x), (surface->h)+(10*x));
+    alien->SetPosition(pos);
+    aliens.push_back(alien);
+  }
+  
+  for(int i=1; i<=2; i++)  {
+   auto barrier = make_shared<SFAsset>(SFASSET_BARRIER);
+   int x1 = rand() % 20*5; //http://www.cplusplus.com/forum/	beginner/98214/
+   auto pos     = Point2((4*x1), 0);
+   barrier->SetPosition(pos);
+   barriers.push_back(barrier);
+  }
+  
+  auto coin = make_shared<SFAsset>(SFASSET_COIN);
+  int x2 = rand() % 101+4; //http://www.cplusplus.com/forum/beginner/98214/
+  auto pos2   = Point2(((surface->w/100)*x2), (surface->h)+(surface->h + (5*x2)));
+  coin->SetPosition(pos2);
+  coins.push_back(coin);
+
+  auto b1 = make_shared<SFAsset>(SFASSET_BG1);
+  auto pos3 = Point2((surface->w/2), (surface->h + (surface->h/2)));
+  b1->SetPosition(pos3);
+  bg1.push_back(b1);
+
+  auto b2 = make_shared<SFAsset>(SFASSET_BG2);
+  auto pos4 = Point2((surface->w/2), ((surface->h*2) + (surface->h/2)));
+  b2->SetPosition(pos4);
+  bg2.push_back(b2);
+}
+
+SFApp::~SFApp() {
+}
+
+/**
+ * Handle all events that come from SDL.
+ * These are timer or keyboard events.
+ */
+void SFApp::OnEvent(SFEvent& event) {
+  SFEVENT the_event = event.GetCode();
+  switch (the_event) {
+  case SFEVENT_QUIT:
+    is_running = false;
+    break;
+  case SFEVENT_UPDATE:
+    OnUpdateWorld();
+    OnRender();
+    break;
+  case SFEVENT_PLAYER_LEFT:
+    player->GoWest();
+    break;
+  case SFEVENT_PLAYER_RIGHT:
+    player->GoEast();
+    break;
+  case SFEVENT_PLAYER_UP:
+    player->GoNorth(t, f);
+    break;
+  case SFEVENT_PLAYER_DOWN:
+    player->GoSouth(t, f, f);
+    break;
+  case SFEVENT_FIRE:
+    fire ++;
+    FireProjectile();
+    break;
+  }
+}
+
+int SFApp::OnExecute() {
+  // Execute the app
+  SDL_Event event;
+  while (SDL_WaitEvent(&event) && is_running) {
+    // if this is an update event, then handle it in SFApp,
+    // otherwise punt it to the SFEventDispacher.
+    SFEvent sfevent((const SDL_Event) event);
+    OnEvent(sfevent);
+  }
+}
+
+ int   score = 0;
+ int    Naut = 0;
+ int meteors = 0;
+
+void SFApp::OnUpdateWorld() {
+
+  // Update projectile positions
+  for(auto pr: projectiles) {
+    pr->GoNorth(f, f);
+    bool pos = pr->CheckPosition(f, t);
+     if(pos == true)  {
+      pr->HandleCollision();
+
+      list<shared_ptr<SFAsset>> tmp;
+      for(auto p : projectiles)  {
+       if(p->IsAlive()) {    
+        tmp.push_back(p);
+       }
+      }
+     }
+  }
+
+  for(auto c: coins) {
+    c->GoSouth(f, f, f);
+    bool pos = c->CheckPosition(f, f);
+     if(pos == true)
+     {
+      int x = rand() % 101+4; //http://www.cplusplus.com/forum/beginner/98214/
+      auto pos   = Point2(((surface->w/100)*x), (surface->h)+(surface->h + (5*x)));
+      c->SetPosition(pos);
+     }
+  }
+
+  // Update enemy positions
+  for(auto a : aliens) {
+    // do something here
+   a->GoSouth(f, f, t);
+   bool pos = a->CheckPosition(f, f);   
+    if(pos == true)  {
+     int x = rand() % 101+4; //http://www.cplusplus.com/forum/beginner/98214/
+     auto pos   = Point2(((surface->w/100)*x), (surface->h)+(10*x));
+     a->SetPosition(pos);
+    } 
+  }
+
+  for(auto b : barriers)  {
+   b->GoNorth(f, t);
+   bool pos = b->CheckPosition(f, t);
+    if(pos == true)  {
+     int x = rand() % 20*5; //http://www.cplusplus.com/forum/	beginner/98214/
+   auto pos     = Point2((8*x), 0);
+     b->SetPosition(pos);
+    }
+  }
+  
+  for(auto b1: bg1)  {
+    b1->GoSouth(f, t, f);
+    bool pos = b1->CheckPosition(t, f);
+     if(pos == true)   {
+      auto pos3 = Point2((surface->w/2), ((surface->h*2) + (surface->h/2)));
+      b1->SetPosition(pos3);
+     }   
+  }
+  
+  for(auto b2: bg2)  {
+    b2->GoSouth(f, t, f);
+    bool pos = b2->CheckPosition(t, f);
+     if(pos == true)   {
+      auto pos3 = Point2((surface->w/2), ((surface->h*2) + (surface->h/2)));
+      b2->SetPosition(pos3);
+     }    
+  }
+
+  // Detect collisions
+  for(auto pr : projectiles) {
+   for(auto a : aliens)    {
+    for(auto b : barriers)  {
+     for(auto c : coins)   {
+     int x = rand() % 101+4; //http://www.cplusplus.com/forum/beginner/98214/
+     if(a->CollidesWith(player))  {
+      is_running = false;
+     }
+     if(a->CollidesWith(b) || b->CollidesWith(a))  {
+      auto pos   = Point2(((surface->w/100)*x), (surface->h)+(10*x));
+      a->SetPosition(pos);
+     }
+     if(pr->CollidesWith(a)) {
+        score++;
+        meteors++;
+        auto pos   = Point2(((surface->w/100)*x), (surface->h)+(10*x));
+        a->SetPosition(pos);       
+     }
+     if(c->CollidesWith(player) || player->CollidesWith(c)) {
+        score = score + 50;
+        Naut++;
+        auto pos   = Point2(((surface->w/100)*x), (surface->h)+(surface->h + (5*x)));
+        c->SetPosition(pos);
+      }
+      
+      if(b->CollidesWith(player) || player->CollidesWith(b))  {
+       player->GoNorth(f, t);
+      }
+
+     }
+    }
+   }
+  }
+
+  // remove dead aliens (the long way)
+  list<shared_ptr<SFAsset>> tmp;
+  for(auto a : aliens) {
+    if(a->IsAlive()) {    
+      tmp.push_back(a);
+    }
+  }
+  aliens.clear();
+  aliens = list<shared_ptr<SFAsset>>(tmp);
+
+  if(is_running == false)  {
+   cout << " Game Over! your score was: " << score << endl;
+   cout << " You destroyed " << meteors << " meteors and " << endl;
+   if(Naut == 1)  {
+    cout << " you saved " << Naut << " Astronaut" << endl;
+   }
+   else   {
+    cout << " you saved " << Naut << " Astronauts" << endl;
+   }
+  }
+}
+
+void SFApp::OnRender() {
+  // clear the surface
+  SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 0, 0, 0) );
+
+  for(auto b1: bg1)  {
+  if(b1->IsAlive()) {b1->OnRender(surface);}
+  }
+
+  for(auto b2: bg2)  {
+  if(b2->IsAlive()) {b2->OnRender(surface);}
+  }
+
+  // draw the player
+  player->OnRender(surface);
+
+  for(auto p: projectiles) {
+    if(p->IsAlive()) {p->OnRender(surface);}
+  }
+
+  for(auto a: aliens) {
+    if(a->IsAlive()) {a->OnRender(surface);}
+  }
+
+  for(auto b: barriers) {
+    if(b->IsAlive()) {b->OnRender(surface);}
+  }
+
+  for(auto c: coins) {
+    if(c->IsAlive()) {c->OnRender(surface);}
+  }
+  
+  // Switch the off-screen buffer to be on-screen
+  SDL_Flip(surface);
+}
+
+void SFApp::FireProjectile() {
+    auto pb = make_shared<SFAsset>(SFASSET_PROJECTILE);
+    auto v  = player->GetPosition();
+    pb->SetPosition(v);
+    projectiles.push_back(pb);
+}
+
