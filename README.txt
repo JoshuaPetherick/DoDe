@@ -11,7 +11,7 @@ The Destruction of Deimos
 
  The Story
 
-		Within our system lurks a planet, not far from our homeland. We call it Haven, but it used to 
+	Within our system lurks a planet, not far from our homeland. We call it Haven, but it used to 
 	be known by another name. Mars. Alongside this planet is one of our first space	base, from the days 
 	where we crawled forward towards our galaxy. 
 	
@@ -27,7 +27,7 @@ The Destruction of Deimos
 
  How to Run
 
-		I have created an executable file called "finalgame" which you can use to run the final version
+	I have created an executable file called "finalgame" which you can use to run the final version
 	of the game. If you wish to complile or create a new executable then you open up the terminal, cd to 
 	the DoD folder and then type in:
 
@@ -52,7 +52,7 @@ The Destruction of Deimos
 
  Objective
 
-		As the story suggests, the objective of the game is to save as many Astronaughts as you can. You
+	As the story suggests, the objective of the game is to save as many Astronaughts as you can. You
 	also have to try and dodge some fiery bits of meteor debris as it flaming well shoots towards you (try
 	not to have your wing clipped). Luckily your ship is also equipped with some pretty powerful weaponry,
 	so try use it frequently. Some of our more local satallietes around the area have also been seen flying
