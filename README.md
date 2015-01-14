@@ -3,27 +3,10 @@ The Destruction of Deimos
 
  Contents:
 
-	Story...
 	How to Run...
+	Story...
 	Objective...
 	Known bugs and issues...
-
-
- The Story
-
-	Within our system lurks a planet, not far from our homeland. We call it Haven, but it used to 
-	be known by another name. Mars. Alongside this planet is one of our first space	base, from the days 
-	where we crawled forward towards our galaxy. 
-	
-	We hadn't recieved many reports from this small encampment, and only a few hours ago did we learn why. 
-	A flaming ball of destruction, commonly known as a meteor, has collided and shattered the moon of 
-	Deimos. Our men on that station have sent us an emergeny SOS, requesting any help that we could 
-	provide them.
-
-	Which is where you come in. We're sending you out to save as many of our fellow men out on that planet
-	and bring them home to their wives and children. Whenever you're ready, climb aboard MY beautiful ship,
-	and go make a name for yourself, captain!
-
 
  How to Run
 
@@ -49,6 +32,20 @@ The Destruction of Deimos
 	folder. There should be 7 in total, with 1 being the very start of the game development, and 7 being
 	the most recent.
 
+ The Story
+
+	Within our system lurks a planet, not far from our homeland. We call it Haven, but it used to 
+	be known by another name. Mars. Alongside this planet is one of our first space	base, from the days 
+	where we crawled forward towards our galaxy. 
+	
+	We hadn't recieved many reports from this small encampment, and only a few hours ago did we learn why. 
+	A flaming ball of destruction, commonly known as a meteor, has collided and shattered the moon of 
+	Deimos. Our men on that station have sent us an emergeny SOS, requesting any help that we could 
+	provide them.
+
+	Which is where you come in. We're sending you out to save as many of our fellow men out on that planet
+	and bring them home to their wives and children. Whenever you're ready, climb aboard MY beautiful ship,
+	and go make a name for yourself, captain!
 
  Objective
 
@@ -64,7 +61,6 @@ The Destruction of Deimos
 	point for destroying a meteor and 50 points for saving a fellow Astronaught. The satallites will not
 	only push your north, towards the meteors, but will also destory any meteors that it collides with. It
 	is useful to remember that.
-
 
 Known bugs and issues
 
